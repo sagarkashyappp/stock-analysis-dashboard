@@ -44,12 +44,10 @@ A comprehensive stock market analysis dashboard that provides time series decomp
 This project is for educational purposes only. The predictions and analysis should not be considered as financial advice. Stock market investments carry risks, and past performance does not guarantee future results.
 
 ## 👨‍💻 Code Unity
-Sagar
-Manul Sahu
-Dushyant
-Adarsh Priydarshi
-
-## GitHub: @sagarkashyappp
+- **Sagar**
+- **Manul Sahu**
+- **Dushyant**
+- **Adarsh Priydarshi**
 
 ## 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
