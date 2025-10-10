@@ -43,9 +43,9 @@ This project is for educational purposes only. The predictions and analysis shou
 
 ## 👨‍💻 Code Unity
 - **[Sagar](https://github.com/sagarkashyappp)**
-- **Manul Sahu(https://github.com/manulsahu)**
-- **Dushyant(https://github.com/dushyantrajotia)**
-- **Adarsh Priydarshi(https://github.com/adarsh8797)**
+- **[Manul Sahu](https://github.com/manulsahu)**
+- **[Dushyant](https://github.com/dushyantrajotia)**
+- **[Adarsh Priydarshi](https://github.com/adarsh8797)**
 
 ## 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
