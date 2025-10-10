@@ -29,3 +29,30 @@ A comprehensive stock market analysis dashboard that provides time series decomp
    ```bash
    git clone https://github.com/yourusername/stock-analysis-dashboard.git
    cd stock-analysis-dashboard
+
+2. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   
+3. **Run the Application**
+   ```bash
+   streamlit run app.py
+   
+4. **Open your browser and go to http://localhost:8501**
+
+## ⚠️ Disclaimer
+This project is for educational purposes only. The predictions and analysis should not be considered as financial advice. Stock market investments carry risks, and past performance does not guarantee future results.
+
+## 👨‍💻 Code Unity
+Sagar
+Manul Sahu
+Dushyant
+Adarsh Priydarshi
+
+## GitHub: @sagarkashyappp
+
+## 📄 License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## ⭐ Show your support
+Give a ⭐️ if this project helped you!
