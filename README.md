@@ -2,8 +2,6 @@
 
 A comprehensive stock market analysis dashboard that provides time series decomposition and price prediction for Indian stocks using SARIMA modeling.
 
-![Dashboard Preview](https://via.placeholder.com/800x400/1f77b4/ffffff?text=Stock+Analysis+Dashboard)
-
 ## 🚀 Features
 
 - **📈 Real-time Stock Data** - Fetch live data from Yahoo Finance
