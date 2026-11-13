@@ -13,7 +13,7 @@ warnings.filterwarnings('ignore')
 
 # ---------- PAGE CONFIG ----------
 st.set_page_config(
-    page_title="Stock Market Analysis Dashboard",
+    page_title="SagarFinSight | Stock Market Analysis",
     layout="wide",
     page_icon="📈",
     initial_sidebar_state="collapsed"
@@ -32,14 +32,14 @@ st.markdown("""
     }
     
     .stApp {
-        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        background: linear-gradient(135deg, #0B1220 0%, #111C2D 58%, #0F1A2A 100%);
     }
     
     .glass {
         background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(148, 163, 184, 0.16);
         border-radius: 24px;
         padding: 2rem;
         box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
@@ -52,24 +52,24 @@ st.markdown("""
         border-color: rgba(255, 255, 255, 0.15);
     }
     
-    .glass-red { background: rgba(102, 126, 234, 0.15); border-color: rgba(102, 126, 234, 0.2); }
-    .glass-green  { background: rgba(56, 239, 125, 0.12); border-color: rgba(56, 239, 125, 0.15); }
-    .glass-pink   { background: rgba(245, 87, 108, 0.12); border-color: rgba(245, 87, 108, 0.15); }
-    .glass-blue   { background: rgba(79, 172, 254, 0.12); border-color: rgba(79, 172, 254, 0.15); }
-    .glass-orange { background: rgba(255, 165, 0, 0.12); border-color: rgba(255, 165, 0, 0.15); }
-    span.glass-purple { background: rgba(102, 126, 234, 0.15); border-color: rgba(102, 126, 234, 0.2); }
-    with span.glass-purple:hover { background: rgba(102, 126, 234, 0.25); border-color: rgba(102, 126, 234, 0.3); }
+    .glass-red { background: rgba(45, 212, 191, 0.12); border-color: rgba(45, 212, 191, 0.16); }
+    .glass-green  { background: rgba(34, 197, 94, 0.12); border-color: rgba(34, 197, 94, 0.18); }
+    .glass-pink   { background: rgba(248, 113, 113, 0.12); border-color: rgba(248, 113, 113, 0.18); }
+    .glass-blue   { background: rgba(96, 165, 250, 0.12); border-color: rgba(96, 165, 250, 0.18); }
+    .glass-orange { background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.18); }
+    span.glass-purple { background: rgba(45, 212, 191, 0.12); border-color: rgba(45, 212, 191, 0.16); }
+    with span.glass-purple:hover { background: rgba(45, 212, 191, 0.18); border-color: rgba(45, 212, 191, 0.24); }
     /* ---------- HEADER ---------- */
     .main-header {
         font-size: 3.5rem;
         text-align: center;
         font-weight: 900;
         letter-spacing: -1.5px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        background: linear-gradient(135deg, #5EEAD4 0%, #38BDF8 55%, #38BDF8 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         padding: 1rem 0 0.2rem 0;
-        text-shadow: 0 0 80px rgba(102, 126, 234, 0.3);
+        text-shadow: 0 0 80px rgba(45, 212, 191, 0.24);
     }
     
     .sub-header {
@@ -114,17 +114,17 @@ st.markdown("""
     
     .nav-header .nav-btn:hover {
         color: #ffffff;
-        background: rgba(102, 126, 234, 0.15);
-        border-color: rgba(102, 126, 234, 0.3);
+        background: rgba(45, 212, 191, 0.12);
+        border-color: rgba(45, 212, 191, 0.24);
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+        box-shadow: 0 6px 20px rgba(45, 212, 191, 0.12);
     }
     
     .nav-header .nav-btn.active {
         color: #ffffff;
-        background: rgba(102, 126, 234, 0.25);
-        border-color: #667eea;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        background: rgba(45, 212, 191, 0.18);
+        border-color: #2DD4BF;
+        box-shadow: 0 4px 15px rgba(45, 212, 191, 0.16);
     }
     
     /* ---------- SECTION HEADERS ---------- */
@@ -133,7 +133,7 @@ st.markdown("""
         color: #ffffff;
         margin: 2rem 0 1.5rem 0;
         padding-bottom: 0.75rem;
-        border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+        border-bottom: 2px solid rgba(45, 212, 191, 0.24);
         font-weight: 700;
         display: flex;
         align-items: center;
@@ -142,7 +142,7 @@ st.markdown("""
     }
     
     .section-header span {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, #5EEAD4, #38BDF8);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
@@ -186,7 +186,7 @@ st.markdown("""
         font-size: 2rem;
         font-weight: 800;
         margin-top: 0.3rem;
-        background: linear-gradient(135deg, #fff 0%, #a8c0ff 100%);
+        background: linear-gradient(135deg, #fff 0%, #99F6E4 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
@@ -212,16 +212,16 @@ st.markdown("""
     }
     
     .plot-container:hover {
-        border-color: rgba(102, 126, 234, 0.25);
+        border-color: rgba(45, 212, 191, 0.18);
         box-shadow: 0 12px 50px rgba(0, 0, 0, 0.3);
     }
     
     /* ---------- SUCCESS BOX ---------- */
     .success-box {
-        background: rgba(56, 239, 125, 0.08);
+        background: rgba(34, 197, 94, 0.08);
         backdrop-filter: blur(15px);
         -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(56, 239, 125, 0.12);
+        border: 1px solid rgba(34, 197, 94, 0.12);
         padding: 1.8rem;
         border-radius: 20px;
         color: rgba(255,255,255,0.9);
@@ -233,7 +233,7 @@ st.markdown("""
     }
     
     .success-box:hover {
-        border-color: rgba(56, 239, 125, 0.3);
+        border-color: rgba(34, 197, 94, 0.28);
         transform: scale(1.01);
     }
     
@@ -242,8 +242,8 @@ st.markdown("""
     .stTextArea > div > div,
     .stSelectbox > div > div,
     .stDateInput > div > div {
-        background: rgba(255,255,255,0.05) !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
+        background: rgba(30, 41, 59, 0.72) !important;
+        border: 1px solid rgba(148,163,184,0.20) !important;
         border-radius: 12px !important;
         color: white !important;
         transition: border-color 0.3s ease;
@@ -253,25 +253,44 @@ st.markdown("""
     .stTextArea > div > div:focus-within,
     .stSelectbox > div > div:focus-within,
     .stDateInput > div > div:focus-within {
-        border-color: #667eea !important;
-        box-shadow: 0 0 20px rgba(102, 126, 234, 0.08) !important;
+        border-color: #2DD4BF !important;
+        box-shadow: 0 0 20px rgba(45, 212, 191, 0.12) !important;
+    }
+
+    .stTextInput label,
+    .stTextArea label,
+    .stSelectbox label,
+    .stDateInput label {
+        color: rgba(226, 232, 240, 0.88) !important;
+    }
+
+    .stTextInput input,
+    .stTextArea textarea,
+    .stDateInput input {
+        color: #f8fafc !important;
+    }
+
+    .stTextInput input::placeholder,
+    .stTextArea textarea::placeholder {
+        color: rgba(203, 213, 225, 0.62) !important;
     }
     
     .stButton > button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        white-space: nowrap !important;
+        background: linear-gradient(135deg, #0F766E 0%, #0E7490 100%) !important;
         color: white !important;
         border: none !important;
         border-radius: 50px !important;
-        padding: 0.7rem 2rem !important;
+        padding: 0.65rem 1.35rem !important;
         font-weight: 600 !important;
         transition: all 0.3s ease !important;
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.25) !important;
+        box-shadow: 0 8px 25px rgba(45, 212, 191, 0.18) !important;
         letter-spacing: 0.3px;
     }
     
     .stButton > button:hover {
         transform: translateY(-3px) !important;
-        box-shadow: 0 12px 35px rgba(102, 126, 234, 0.35) !important;
+        box-shadow: 0 9px 24px rgba(20, 184, 166, 0.24) !important;
     }
     
     /* ---------- FAQ ITEMS ---------- */
@@ -286,7 +305,7 @@ st.markdown("""
     
     .faq-item:hover {
         background: rgba(255,255,255,0.05);
-        border-color: rgba(102, 126, 234, 0.15);
+        border-color: rgba(45, 212, 191, 0.12);
     }
     
     .faq-item .faq-q {
@@ -343,11 +362,11 @@ def navigate_to(page_name):
     st.session_state.page = page_name
 
 # ---------- HEADER ----------
-st.markdown('<div class="main-header">📊 Stock Market Analysis Dashboard</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">📊 SagarFinSight</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-header">✨ Time Series Decomposition & SARIMA Forecasting for Indian Stocks</div>', unsafe_allow_html=True)
 
 # ---------- TOP NAVIGATION HEADER ----------
-cols = st.columns([1, 1.5, 1, 1, 1, 1, 1, 0.5, 1])  # spacing
+cols = st.columns([0.35, 1.6, 1.1, 1.35, 1.15, 1.1, 1.3, 0.2, 0.7])  # balanced navigation spacing
 with cols[1]:
     if st.button("Home", key="nav_home", use_container_width=True):
         navigate_to("🏠 Home")
@@ -376,17 +395,20 @@ with cols[8]:
 if st.session_state.theme == "Light":
     st.markdown("""
     <style>
-        .stApp { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
+        .stApp { background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%); }
+        .stTextInput label, .stTextArea label, .stSelectbox label, .stDateInput label { color: #334155 !important; }
+        .stTextInput input, .stTextArea textarea, .stDateInput input { color: #0F172A !important; }
+        .stTextInput input::placeholder, .stTextArea textarea::placeholder { color: #64748B !important; }
         .metric-card .metric-value { background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .section-header { color: #2d3748; }
         .glass { background: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.3); }
-        .success-box { background: rgba(56,239,125,0.15); color: #2d3748; }
+        .success-box { background: rgba(34,197,94,0.14); color: #2d3748; }
         .faq-item .faq-q { color: #2d3748; }
         .faq-item .faq-a { color: #4a5568; }
         .nav-header { background: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.3); }
         .nav-header .nav-btn { color: rgba(0,0,0,0.6); }
-        .nav-header .nav-btn:hover { color: #000; background: rgba(102,126,234,0.1); }
-        .nav-header .nav-btn.active { color: #000; background: rgba(102,126,234,0.2); border-color: #667eea; }
+        .nav-header .nav-btn:hover { color: #000; background: rgba(45,212,191,0.10); }
+        .nav-header .nav-btn.active { color: #000; background: rgba(45,212,191,0.16); border-color: #2DD4BF; }
         .plot-container { background: rgba(255,255,255,0.4); border-color: rgba(255,255,255,0.3); }
         .stTextInput > div > div, .stTextArea > div > div, .stSelectbox > div > div, .stDateInput > div > div { background: white !important; color: black !important; }
         .footer { color: rgba(0,0,0,0.2); border-top-color: rgba(0,0,0,0.05); }
@@ -395,7 +417,7 @@ if st.session_state.theme == "Light":
 else:
     st.markdown("""
     <style>
-        .stApp { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
+        .stApp { background: linear-gradient(135deg, #0B1220 0%, #111C2D 58%, #0F1A2A 100%); }
         .section-header { color: #ffffff; }
     </style>
     """, unsafe_allow_html=True)
@@ -516,7 +538,7 @@ if page == "🏠 Home":
 
             st.markdown('<div class="plot-container">', unsafe_allow_html=True)
             fig, axes = plt.subplots(4, 1, figsize=(14, 10))
-            colors = ['#667eea', '#38ef7d', '#f093fb', '#4facfe']
+            colors = ['#2DD4BF', '#22C55E', '#F59E0B', '#60A5FA']
 
             result.observed.plot(ax=axes[0], title='📊 Observed Data', color=colors[0], linewidth=2)
             axes[0].grid(True, alpha=0.15)
@@ -564,9 +586,9 @@ if page == "🏠 Home":
             fig2, ax = plt.subplots(figsize=(14,6))
             ax.set_facecolor('none')
 
-            ax.plot(data_reset["Date"], data_reset["Close"], label="Historical", color="#667eea", linewidth=2.5, alpha=0.8)
-            ax.plot(future_df["Date"], future_df["Predicted"], label="SARIMA Prediction", color="#f5576c", linewidth=2.5, linestyle='--')
-            ax.fill_between(future_df["Date"], future_df["Lower"], future_df["Upper"], color="#f5576c", alpha=0.15, label="95% CI")
+            ax.plot(data_reset["Date"], data_reset["Close"], label="Historical", color="#2DD4BF", linewidth=2.5, alpha=0.8)
+            ax.plot(future_df["Date"], future_df["Predicted"], label="SARIMA Prediction", color="#F87171", linewidth=2.5, linestyle='--')
+            ax.fill_between(future_df["Date"], future_df["Lower"], future_df["Upper"], color="#F87171", alpha=0.15, label="95% CI")
 
             ax.legend(fontsize=11, loc='upper left')
             ax.set_title("30-Day Price Prediction", fontsize=14, fontweight='600', color='white', pad=20)
@@ -596,7 +618,7 @@ if page == "🏠 Home":
                 <div class="glass glass-purple" style="padding:1.5rem; text-align:center;">
                     <div style="color:rgba(255,255,255,0.6); font-size:0.9rem;">📊 30-Day Prediction</div>
                     <div style="color:white; font-size:2rem; font-weight:800;">₹{last_pred:,.2f}</div>
-                    <div style="color:{'#38ef7d' if pred_change>=0 else '#f5576c'}; font-size:1.1rem;">{pred_change:+.2f}%</div>
+                    <div style="color:{'#22C55E' if pred_change>=0 else '#F87171'}; font-size:1.1rem;">{pred_change:+.2f}%</div>
                 </div>
                 """, unsafe_allow_html=True)
             with col2:
@@ -626,7 +648,7 @@ elif page == "📖 About":
         <div class="glass" style="height:100%;">
             <h3 style="color:white; font-size:1.6rem;"> Project Overview</h3>
             <p style="color:rgba(255,255,255,0.7); line-height:1.8;">
-                The <b>Stock Market Analysis Dashboard</b> is a comprehensive web application designed to 
+                <b>SagarFinSight</b> is a comprehensive web application designed to 
                 analyze and forecast Indian stock prices using advanced time series techniques.
             </p>
             <br>
@@ -651,10 +673,10 @@ elif page == "📖 About":
             <p style="color:rgba(255,255,255,0.5);">School of Engg. & Technology</p>
             <br>
             <div style="display:flex; justify-content:center; gap:0.8rem; flex-wrap:wrap;">
-                <span style="background:rgba(102,126,234,0.2); padding:0.3rem 1.2rem; border-radius:50px; font-size:0.8rem;">🐍 Python</span>
-                <span style="background:rgba(56,239,125,0.2); padding:0.3rem 1.2rem; border-radius:50px; font-size:0.8rem;">📊 Streamlit</span>
-                <span style="background:rgba(245,87,108,0.2); padding:0.3rem 1.2rem; border-radius:50px; font-size:0.8rem;">🧠 SARIMA</span>
-                <span style="background:rgba(79,172,254,0.2); padding:0.3rem 1.2rem; border-radius:50px; font-size:0.8rem;">📈 Finance</span>
+                <span style="background:rgba(45,212,191,0.16); padding:0.3rem 1.2rem; border-radius:50px; font-size:0.8rem;">🐍 Python</span>
+                <span style="background:rgba(34,197,94,0.14); padding:0.3rem 1.2rem; border-radius:50px; font-size:0.8rem;">📊 Streamlit</span>
+                <span style="background:rgba(248,113,113,0.14); padding:0.3rem 1.2rem; border-radius:50px; font-size:0.8rem;">🧠 SARIMA</span>
+                <span style="background:rgba(96,165,250,0.14); padding:0.3rem 1.2rem; border-radius:50px; font-size:0.8rem;">📈 Finance</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -706,7 +728,7 @@ elif page == "📖 About":
     """, unsafe_allow_html=True)
 
     st.markdown("""
-    <div class="glass" style="margin-top:2rem; padding:1.5rem; text-align:center; background:rgba(255,165,0,0.04); border-color:rgba(255,165,0,0.1);">
+    <div class="glass" style="margin-top:2rem; padding:1.5rem; text-align:center; background:rgba(245,158,11,0.05); border-color:rgba(245,158,11,0.12);">
         <div style="font-size:1.2rem; color:rgba(255,255,255,0.8);">
             ⚠️ <b>Disclaimer:</b> This project is for <b>educational purposes only</b>. 
             The predictions and analysis should not be considered as financial advice. 
@@ -737,7 +759,7 @@ elif page == "📊 Portfolio":
             with st.spinner("Fetching..."):
                 fig, ax = plt.subplots(figsize=(14,7))
                 ax.set_facecolor('none')
-                colors = ['#667eea','#38ef7d','#f5576c','#f093fb']
+                colors = ['#2DD4BF','#22C55E','#F87171','#F59E0B']
                 for i, stock in enumerate(selected):
                     ticker = companies[stock]
                     d = yf.download(ticker, start=start_p, end=end_p, progress=False)
@@ -817,28 +839,28 @@ elif page == "📈 Technical Analysis":
             fig, axes = plt.subplots(3,1, figsize=(14,12))
 
             # Price & MA
-            axes[0].plot(data.index, data['Close'], label='Close', color='#667eea', linewidth=2)
-            axes[0].plot(data.index, data['SMA_20'], label='SMA 20', color='#38ef7d', linewidth=1.5, linestyle='--')
-            axes[0].plot(data.index, data['SMA_50'], label='SMA 50', color='#f093fb', linewidth=1.5, linestyle='--')
-            axes[0].plot(data.index, data['SMA_200'], label='SMA 200', color='#f5576c', linewidth=1.5, linestyle='--')
+            axes[0].plot(data.index, data['Close'], label='Close', color='#2DD4BF', linewidth=2)
+            axes[0].plot(data.index, data['SMA_20'], label='SMA 20', color='#22C55E', linewidth=1.5, linestyle='--')
+            axes[0].plot(data.index, data['SMA_50'], label='SMA 50', color='#F59E0B', linewidth=1.5, linestyle='--')
+            axes[0].plot(data.index, data['SMA_200'], label='SMA 200', color='#F87171', linewidth=1.5, linestyle='--')
             axes[0].set_title('Price & Moving Averages', color='white', fontsize=12, fontweight='600')
             axes[0].legend(loc='upper left')
             axes[0].grid(True, alpha=0.15)
 
             # RSI
-            axes[1].plot(data.index, data['RSI'], label='RSI 14', color='#f093fb', linewidth=2)
-            axes[1].axhline(y=70, color='#f5576c', linestyle='--', alpha=0.5, label='Overbought 70')
-            axes[1].axhline(y=30, color='#38ef7d', linestyle='--', alpha=0.5, label='Oversold 30')
+            axes[1].plot(data.index, data['RSI'], label='RSI 14', color='#F59E0B', linewidth=2)
+            axes[1].axhline(y=70, color='#F87171', linestyle='--', alpha=0.5, label='Overbought 70')
+            axes[1].axhline(y=30, color='#22C55E', linestyle='--', alpha=0.5, label='Oversold 30')
             axes[1].set_title('Relative Strength Index (RSI)', color='white', fontsize=12, fontweight='600')
             axes[1].legend(loc='upper left')
             axes[1].grid(True, alpha=0.15)
             axes[1].set_ylim(0,100)
 
             # Bollinger Bands
-            axes[2].plot(data.index, data['Close'], label='Close', color='#667eea', linewidth=1.5)
-            axes[2].plot(data.index, data['BB_Upper'], label='Upper Band', color='#f5576c', linewidth=1, linestyle='--')
-            axes[2].plot(data.index, data['BB_Lower'], label='Lower Band', color='#38ef7d', linewidth=1, linestyle='--')
-            axes[2].fill_between(data.index, data['BB_Lower'], data['BB_Upper'], alpha=0.08, color='#667eea')
+            axes[2].plot(data.index, data['Close'], label='Close', color='#2DD4BF', linewidth=1.5)
+            axes[2].plot(data.index, data['BB_Upper'], label='Upper Band', color='#F87171', linewidth=1, linestyle='--')
+            axes[2].plot(data.index, data['BB_Lower'], label='Lower Band', color='#22C55E', linewidth=1, linestyle='--')
+            axes[2].fill_between(data.index, data['BB_Lower'], data['BB_Upper'], alpha=0.08, color='#2DD4BF')
             axes[2].set_title('Bollinger Bands (20-day)', color='white', fontsize=12, fontweight='600')
             axes[2].legend(loc='upper left')
             axes[2].grid(True, alpha=0.15)
@@ -875,65 +897,135 @@ elif page == "📈 Technical Analysis":
             
 # ---------- NEWS & SENTIMENT ----------
 elif page == "📰 News & Sentiment":
-    st.markdown('<div class="section-header"> <span>News & Market Sentiment</span></div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header"><span>News & Market Sentiment</span></div>',
+        unsafe_allow_html=True
+    )
 
     st.markdown("""
-    <div class="glass" style="margin-bottom:2rem;">
-        <h3 style="color:white;"> Market Sentiment Analysis</h3>
-        <p style="color:rgba(255,255,255,0.6);">Track market trends and sentiment indicators.</p>
+    <div class="glass" style="margin-bottom:1.5rem;">
+        <h3 style="color:white;">Indian Market Snapshot</h3>
+        <p style="color:rgba(255,255,255,0.62); margin-bottom:0;">
+            Latest completed trading session: Friday, 13 November 2026.
+            Figures below are closing-session values, not live quotes.
+        </p>
     </div>
     """, unsafe_allow_html=True)
 
+    # Verified close figures for the 13 November 2026 session.
     col1, col2, col3 = st.columns(3)
+
     with col1:
         st.markdown("""
         <div class="glass" style="text-align:center;">
-            <div style="font-size:2.8rem;">📈</div>
-            <div style="color:rgba(255,255,255,0.4);">Market Trend</div>
-            <div style="color:#38ef7d; font-weight:700; font-size:1.6rem;">Bullish</div>
-            <div style="color:rgba(255,255,255,0.3); font-size:0.7rem;">30-day momentum</div>
+            <div style="font-size:2.2rem;">📉</div>
+            <div style="color:rgba(255,255,255,0.58);">Market Trend</div>
+            <div style="color:#F87171; font-weight:800; font-size:1.6rem;">Bearish</div>
+            <div style="color:rgba(255,255,255,0.52); font-size:0.82rem;">
+                NIFTY 50: 25,144.30<br>
+                −155.05 points (−0.61%)
+            </div>
         </div>
         """, unsafe_allow_html=True)
+
     with col2:
         st.markdown("""
         <div class="glass" style="text-align:center;">
-            <div style="font-size:2.8rem;">📊</div>
-            <div style="color:rgba(255,255,255,0.4);">Sentiment Score</div>
-            <div style="color:#f093fb; font-weight:700; font-size:1.6rem;">72/100</div>
-            <div style="color:rgba(255,255,255,0.3); font-size:0.7rem;">Positive sentiment</div>
+            <div style="font-size:2.2rem;">📊</div>
+            <div style="color:rgba(255,255,255,0.58);">Market Breadth</div>
+            <div style="color:#F59E0B; font-weight:800; font-size:1.6rem;">38 / 50 Declined</div>
+            <div style="color:rgba(255,255,255,0.52); font-size:0.82rem;">
+                11 advanced · 1 unchanged<br>
+                SENSEX: 81,592.45 (−0.39%)
+            </div>
         </div>
         """, unsafe_allow_html=True)
+
     with col3:
         st.markdown("""
         <div class="glass" style="text-align:center;">
-            <div style="font-size:2.8rem;">🔥</div>
-            <div style="color:rgba(255,255,255,0.4);">Volatility</div>
-            <div style="color:#f5576c; font-weight:700; font-size:1.6rem;">Medium</div>
-            <div style="color:rgba(255,255,255,0.3); font-size:0.7rem;">VIX Indicator</div>
+            <div style="font-size:2.2rem;">🌡️</div>
+            <div style="color:rgba(255,255,255,0.58);">India VIX</div>
+            <div style="color:#2DD4BF; font-weight:800; font-size:1.6rem;">15.50</div>
+            <div style="color:rgba(255,255,255,0.52); font-size:0.82rem;">
+                −6.74% on the day<br>
+                Previous close: 16.62
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
     st.markdown("""
-    <div class="glass" style="margin-top:2rem;">
+    <div class="glass" style="margin-top:1.5rem;">
         <h4 style="color:white;">📝 Recent Market Highlights</h4>
-        <div style="display:grid; gap:0.8rem; margin-top:1rem;">
-            <div style="background:rgba(255,255,255,0.02); padding:1rem; border-radius:12px; border-left:3px solid #667eea;">
-                <div style="color:rgba(255,255,255,0.3); font-size:0.7rem;">📅 2 hours ago</div>
-                <div style="color:white;">Indian markets show positive momentum following global cues</div>
+        <div style="display:grid; gap:0.85rem; margin-top:1rem;">
+            <div style="background:rgba(255,255,255,0.035); padding:1rem; border-radius:12px; border-left:3px solid #F87171;">
+                <div style="color:rgba(255,255,255,0.52); font-size:0.75rem;">
+                    Market close · 13 Nov 2026
+                </div>
+                <div style="color:white; margin:0.25rem 0;">
+                    Sensex fell 318.56 points to 81,592.45 (−0.39%), while Nifty 50
+                    declined 155.05 points to 25,144.30 (−0.61%), ending a three-session
+                    winning streak.
+                </div>
+                <div style="font-size:0.76rem;">
+                    <a href="https://www.reuters.com/world/india/indian-shares-likely-open-flat-oil-surge-counters-strong-foreign-inflows-2026-11-13/"
+                       target="_blank" rel="noopener noreferrer"
+                       style="color:#5EEAD4; text-decoration:none;">Source: Reuters</a>
+                    &nbsp;·&nbsp;
+                    <a href="https://timesofindia.indiatimes.com/business/india-business/sensex-stock-market-today-13-november-2026-live-updates-nse-bse-gift-nifty-50-top-gainers-losers-mcx-stocks-in-focus-market-news/liveblog/135787823.cms"
+                       target="_blank" rel="noopener noreferrer"
+                       style="color:#5EEAD4; text-decoration:none;">Market breadth and movers</a>
+                </div>
             </div>
-            <div style="background:rgba(255,255,255,0.02); padding:1rem; border-radius:12px; border-left:3px solid #38ef7d;">
-                <div style="color:rgba(255,255,255,0.3); font-size:0.7rem;">📅 5 hours ago</div>
-                <div style="color:white;">IT sector leads rally as rupee strengthens against dollar</div>
+            <div style="background:rgba(255,255,255,0.035); padding:1rem; border-radius:12px; border-left:3px solid #F59E0B;">
+                <div style="color:rgba(255,255,255,0.52); font-size:0.75rem;">
+                    Official data release · 12 Nov 2026
+                </div>
+                <div style="color:white; margin:0.25rem 0;">
+                    India's provisional October retail inflation rose to 6.09% year-on-year,
+                    above the RBI's 6% upper tolerance level. Food inflation stood at 8.94%.
+                </div>
+                <div style="font-size:0.76rem;">
+                    <a href="https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2335416&lang=1&reg=3"
+                       target="_blank" rel="noopener noreferrer"
+                       style="color:#5EEAD4; text-decoration:none;">Source: Ministry of Statistics &amp; Programme Implementation (PIB)</a>
+                </div>
             </div>
-            <div style="background:rgba(255,255,255,0.02); padding:1rem; border-radius:12px; border-left:3px solid #f093fb;">
-                <div style="color:rgba(255,255,255,0.3); font-size:0.7rem;">📅 1 day ago</div>
-                <div style="color:white;">Oil prices decline, benefiting energy-importing countries</div>
+            <div style="background:rgba(255,255,255,0.035); padding:1rem; border-radius:12px; border-left:3px solid #2DD4BF;">
+                <div style="color:rgba(255,255,255,0.52); font-size:0.75rem;">
+                    Weekly market update · 13 Nov 2026
+                </div>
+                <div style="color:white; margin:0.25rem 0;">
+                    Despite Friday's decline, the benchmarks finished the week higher:
+                    Nifty 50 gained about 0.5% and Sensex about 0.7%. Reuters also reported
+                    around $8 billion of foreign investor inflows into India so far in November.
+                </div>
+                <div style="font-size:0.76rem;">
+                    <a href="https://www.reuters.com/world/india/indian-shares-likely-open-flat-oil-surge-counters-strong-foreign-inflows-2026-11-13/"
+                       target="_blank" rel="noopener noreferrer"
+                       style="color:#5EEAD4; text-decoration:none;">Source: Reuters</a>
+                </div>
             </div>
-            <div style="background:rgba(255,255,255,0.02); padding:1rem; border-radius:12px; border-left:3px solid #f5576c;">
-                <div style="color:rgba(255,255,255,0.3); font-size:0.7rem;">📅 2 days ago</div>
-                <div style="color:white;">FII inflows surge as emerging markets attract investors</div>
+            <div style="background:rgba(255,255,255,0.035); padding:1rem; border-radius:12px; border-left:3px solid #38BDF8;">
+                <div style="color:rgba(255,255,255,0.52); font-size:0.75rem;">
+                    Volatility update · 13 Nov 2026
+                </div>
+                <div style="color:white; margin:0.25rem 0;">
+                    India VIX was reported at 15.50, down 6.74% from its previous close
+                    of 16.62, indicating a lower options-implied volatility reading for the session.
+                </div>
+                <div style="font-size:0.76rem;">
+                    <a href="https://upstox.com/indices/india-vix-share-price/"
+                       target="_blank" rel="noopener noreferrer"
+                       style="color:#5EEAD4; text-decoration:none;">Source: Upstox</a>
+                </div>
             </div>
         </div>
+        <p style="color:rgba(255,255,255,0.42); font-size:0.72rem; margin-top:1rem; margin-bottom:0;">
+            Data snapshot: 13 November 2026. Market figures are historical closing values.
+            News cards link to their published sources. This section is a dated snapshot and
+            does not automatically refresh with new headlines.
+        </p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -949,16 +1041,11 @@ elif page == "📱 Contact":
             <br>
             <div style="color:rgba(255,255,255,0.7); line-height:2.4;">
                 <div>👨‍💻 <b style="color:white;">Sagar Kashyap</b></div>
-                <div>📧 <b style="color:white;">KashyapSagar9897@gmail.com</b></div>
+                <div>📧 <a href="mailto:sagar46262@gmail.com" style="color:#99F6E4; text-decoration:none; font-weight:600;">sagar46262@gmail.com</a></div>
                 <div>📍 <b style="color:white;">School of Engg. & Technology</b></div>
                 <div>📞 <b style="color:white;">+91-72929-XXXXX</b></div>
-                <div>🔗 <b style="color:white;">github.com/SagarKashyap</b></div>
-            </div>
-            <br>
-            <div style="background:rgba(255,255,255,0.02); padding:1rem; border-radius:12px;">
-                <div style="color:rgba(255,255,255,0.4); font-size:0.8rem;">🕐 Support Hours</div>
-                <div style="color:rgba(255,255,255,0.8);">Mon-Fri: 9:00 AM - 6:00 PM</div>
-                <div style="color:rgba(255,255,255,0.3); font-size:0.8rem;">Saturday: 10:00 AM - 2:00 PM</div>
+                <div>🐙 <a href="https://github.com/sagarkashyappp" target="_blank" rel="noopener noreferrer" style="color:#99F6E4; text-decoration:none; font-weight:600;">github.com/sagarkashyappp</a></div>
+                <div>🔗 <a href="https://www.linkedin.com/in/sagarbuilds/" target="_blank" rel="noopener noreferrer" style="color:#99F6E4; text-decoration:none; font-weight:600;">linkedin.com/in/sagarbuilds</a></div>
             </div>
         </div>
         """, unsafe_allow_html=True)
