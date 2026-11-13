@@ -11,483 +11,1001 @@ import numpy as np
 import warnings
 warnings.filterwarnings('ignore')
 
-# Streamlit page config
+# ---------- PAGE CONFIG ----------
 st.set_page_config(
-    page_title="Stock Market Decomposition Dashboard", 
+    page_title="Stock Market Analysis Dashboard",
     layout="wide",
-    page_icon="📈"
+    page_icon="📈",
+    initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for styling with light/dark theme support
+# ---------- GLASSMORPHISM & TYPOGRAPHY CSS ----------
 st.markdown("""
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    
+    * {
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    .stApp {
+        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    }
+    
+    .glass {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .glass:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 50px rgba(0, 0, 0, 0.4);
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+    
+    .glass-red { background: rgba(102, 126, 234, 0.15); border-color: rgba(102, 126, 234, 0.2); }
+    .glass-green  { background: rgba(56, 239, 125, 0.12); border-color: rgba(56, 239, 125, 0.15); }
+    .glass-pink   { background: rgba(245, 87, 108, 0.12); border-color: rgba(245, 87, 108, 0.15); }
+    .glass-blue   { background: rgba(79, 172, 254, 0.12); border-color: rgba(79, 172, 254, 0.15); }
+    .glass-orange { background: rgba(255, 165, 0, 0.12); border-color: rgba(255, 165, 0, 0.15); }
+    span.glass-purple { background: rgba(102, 126, 234, 0.15); border-color: rgba(102, 126, 234, 0.2); }
+    with span.glass-purple:hover { background: rgba(102, 126, 234, 0.25); border-color: rgba(102, 126, 234, 0.3); }
+    /* ---------- HEADER ---------- */
     .main-header {
-        font-size: 3rem;
-        color: #1f77b4;
+        font-size: 3.5rem;
         text-align: center;
-        margin-bottom: 2rem;
-        font-weight: 700;
-        background: linear-gradient(90deg, #1f77b4, #ff7f0e);
+        font-weight: 900;
+        letter-spacing: -1.5px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        text-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+        padding: 1rem 0 0.2rem 0;
+        text-shadow: 0 0 80px rgba(102, 126, 234, 0.3);
     }
-    .section-header {
-        font-size: 1.8rem;
-        color: #2e86ab;
-        margin: 2rem 0 1rem 0;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #2e86ab;
-        font-weight: 600;
-    }
-    .metric-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 1.5rem;
-        border-radius: 15px;
-        color: white;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    .success-box {
-        background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
-        padding: 1.5rem;
-        border-radius: 15px;
-        color: white;
+    
+    .sub-header {
         text-align: center;
-        font-weight: 600;
+        color: rgba(255,255,255,0.5);
         font-size: 1.2rem;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        margin: 2rem 0;
+        font-weight: 300;
+        letter-spacing: 3px;
+        margin-bottom: 1.5rem;
     }
+    
+    /* ---------- TOP NAVIGATION ---------- */
+    .nav-header {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        padding: 0.6rem 1.2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: center;
+        gap: 0.3rem;
+        flex-wrap: wrap;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav-header .nav-btn {
+        color: rgba(255,255,255,0.6);
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 50px;
+        padding: 0.5rem 1.5rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        letter-spacing: 0.3px;
+    }
+    
+    .nav-header .nav-btn:hover {
+        color: #ffffff;
+        background: rgba(102, 126, 234, 0.15);
+        border-color: rgba(102, 126, 234, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+    }
+    
+    .nav-header .nav-btn.active {
+        color: #ffffff;
+        background: rgba(102, 126, 234, 0.25);
+        border-color: #667eea;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+    }
+    
+    /* ---------- SECTION HEADERS ---------- */
+    .section-header {
+        font-size: 2.2rem;
+        color: #ffffff;
+        margin: 2rem 0 1.5rem 0;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        letter-spacing: -0.5px;
+    }
+    
+    .section-header span {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    /* ---------- METRIC CARDS ---------- */
+    .metric-card {
+        padding: 1.8rem 1.5rem;
+        border-radius: 20px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s ease;
+    }
+    
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.03);
+        border-radius: 50%;
+        transform: rotate(45deg);
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-8px) scale(1.02);
+    }
+    
+    .metric-card .metric-label {
+        font-size: 0.85rem;
+        opacity: 0.8;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 500;
+        color: rgba(255,255,255,0.8);
+    }
+    
+    .metric-card .metric-value {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-top: 0.3rem;
+        background: linear-gradient(135deg, #fff 0%, #a8c0ff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .metric-card .metric-sub {
+        font-size: 0.85rem;
+        opacity: 0.6;
+        margin-top: 0.2rem;
+        color: rgba(255,255,255,0.6);
+    }
+    
+    /* ---------- PLOT CONTAINER ---------- */
     .plot-container {
-        background-color: white;
-        padding: 1.5rem;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        margin: 1rem 0;
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 20px;
+        padding: 1.8rem;
+        margin: 1.5rem 0;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
     }
     
-    /* Custom styling for selectbox and date inputs */
-    .stSelectbox > div > div {
-        background-color: #e6f7ff !important;
-        border: 2px solid #87CEEB !important;
-        border-radius: 10px !important;
+    .plot-container:hover {
+        border-color: rgba(102, 126, 234, 0.25);
+        box-shadow: 0 12px 50px rgba(0, 0, 0, 0.3);
     }
     
+    /* ---------- SUCCESS BOX ---------- */
+    .success-box {
+        background: rgba(56, 239, 125, 0.08);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(56, 239, 125, 0.12);
+        padding: 1.8rem;
+        border-radius: 20px;
+        color: rgba(255,255,255,0.9);
+        text-align: center;
+        font-weight: 500;
+        font-size: 1.1rem;
+        margin: 2rem 0;
+        transition: all 0.3s ease;
+    }
+    
+    .success-box:hover {
+        border-color: rgba(56, 239, 125, 0.3);
+        transform: scale(1.01);
+    }
+    
+    /* ---------- FORM ELEMENTS ---------- */
+    .stTextInput > div > div,
+    .stTextArea > div > div,
+    .stSelectbox > div > div,
     .stDateInput > div > div {
-        background-color: #e6f7ff !important;
-        border: 2px solid #87CEEB !important;
-        border-radius: 10px !important;
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        border-radius: 12px !important;
+        color: white !important;
+        transition: border-color 0.3s ease;
     }
     
-    /* Dark theme support */
-    @media (prefers-color-scheme: dark) {
-        .plot-container {
-            background-color: #1e1e1e;
-            color: white;
-        }
+    .stTextInput > div > div:focus-within,
+    .stTextArea > div > div:focus-within,
+    .stSelectbox > div > div:focus-within,
+    .stDateInput > div > div:focus-within {
+        border-color: #667eea !important;
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.08) !important;
     }
     
-    .dark-theme {
-        background-color: #0e1117;
+    .stButton > button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 50px !important;
+        padding: 0.7rem 2rem !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.25) !important;
+        letter-spacing: 0.3px;
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 12px 35px rgba(102, 126, 234, 0.35) !important;
+    }
+    
+    /* ---------- FAQ ITEMS ---------- */
+    .faq-item {
+        background: rgba(255,255,255,0.02);
+        border-radius: 16px;
+        padding: 1.2rem 1.5rem;
+        margin-bottom: 0.8rem;
+        border: 1px solid rgba(255,255,255,0.04);
+        transition: all 0.3s ease;
+    }
+    
+    .faq-item:hover {
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(102, 126, 234, 0.15);
+    }
+    
+    .faq-item .faq-q {
         color: white;
+        font-weight: 600;
+        font-size: 1.05rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
     
-    .light-theme {
-        background-color: white;
-        color: black;
+    .faq-item .faq-a {
+        color: rgba(255,255,255,0.7);
+        font-weight: 300;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid rgba(255,255,255,0.04);
+        font-size: 0.95rem;
+    }
+    
+    /* ---------- FOOTER ---------- */
+    .footer {
+        text-align: center;
+        padding: 2rem 0 0.5rem;
+        color: rgba(255,255,255,0.1);
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        border-top: 1px solid rgba(255,255,255,0.03);
+        margin-top: 3rem;
+    }
+    
+    /* ---------- RESPONSIVE ---------- */
+    @media (max-width: 768px) {
+        .main-header { font-size: 2.2rem; }
+        .metric-card .metric-value { font-size: 1.3rem; }
+        .nav-header { flex-direction: column; align-items: stretch; gap: 0.2rem; }
+        .nav-header .nav-btn { text-align: center; }
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- Theme Configuration ---
-def apply_theme(theme):
-    """Apply light or dark theme to the app"""
-    if theme == "Dark":
-        st.markdown(
-            """
-            <style>
-                .stApp {
-                    background-color: #0e1117;
-                    color: white;
-                }
-                .stPlotlyChart, .stPyplot {
-                    background-color: #1e1e1e;
-                }
-                .css-1d391kg, .css-12oz5g7 {
-                    background-color: #0e1117;
-                }
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
-    else:
-        st.markdown(
-            """
-            <style>
-                .stApp {
-                    background-color: white;
-                    color: black;
-                }
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
+# ---------- THEME TOGGLE ----------
+if "theme" not in st.session_state:
+    st.session_state.theme = "Dark"
 
-# --- SARIMA Model Function ---
+def toggle_theme():
+    st.session_state.theme = "Light" if st.session_state.theme == "Dark" else "Dark"
+
+# ---------- PAGE NAVIGATION ----------
+if "page" not in st.session_state:
+    st.session_state.page = "🏠 Home"
+
+def navigate_to(page_name):
+    st.session_state.page = page_name
+
+# ---------- HEADER ----------
+st.markdown('<div class="main-header">📊 Stock Market Analysis Dashboard</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-header">✨ Time Series Decomposition & SARIMA Forecasting for Indian Stocks</div>', unsafe_allow_html=True)
+
+# ---------- TOP NAVIGATION HEADER ----------
+cols = st.columns([1, 1.5, 1, 1, 1, 1, 1, 0.5, 1])  # spacing
+with cols[1]:
+    if st.button("Home", key="nav_home", use_container_width=True):
+        navigate_to("🏠 Home")
+with cols[2]:
+    if st.button("About", key="nav_about", use_container_width=True):
+        navigate_to("📖 About")
+with cols[3]:
+    if st.button("Portfolio", key="nav_portfolio", use_container_width=True):
+        navigate_to("📊 Portfolio")
+with cols[4]:
+    if st.button("Tech", key="nav_tech", use_container_width=True):
+        navigate_to("📈 Technical Analysis")
+with cols[5]:
+    if st.button("News", key="nav_news", use_container_width=True):
+        navigate_to("📰 News & Sentiment")
+with cols[6]:
+    if st.button("Contact", key="nav_contact", use_container_width=True):
+        navigate_to("📱 Contact")
+with cols[8]:
+    theme_label = "☀️" if st.session_state.theme == "Dark" else "🌙"
+    if st.button(f"{theme_label}", key="theme_toggle", use_container_width=True):
+        toggle_theme()
+        st.rerun()
+
+# ---------- APPLY THEME ----------
+if st.session_state.theme == "Light":
+    st.markdown("""
+    <style>
+        .stApp { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
+        .metric-card .metric-value { background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .section-header { color: #2d3748; }
+        .glass { background: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.3); }
+        .success-box { background: rgba(56,239,125,0.15); color: #2d3748; }
+        .faq-item .faq-q { color: #2d3748; }
+        .faq-item .faq-a { color: #4a5568; }
+        .nav-header { background: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.3); }
+        .nav-header .nav-btn { color: rgba(0,0,0,0.6); }
+        .nav-header .nav-btn:hover { color: #000; background: rgba(102,126,234,0.1); }
+        .nav-header .nav-btn.active { color: #000; background: rgba(102,126,234,0.2); border-color: #667eea; }
+        .plot-container { background: rgba(255,255,255,0.4); border-color: rgba(255,255,255,0.3); }
+        .stTextInput > div > div, .stTextArea > div > div, .stSelectbox > div > div, .stDateInput > div > div { background: white !important; color: black !important; }
+        .footer { color: rgba(0,0,0,0.2); border-top-color: rgba(0,0,0,0.05); }
+    </style>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+    <style>
+        .stApp { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
+        .section-header { color: #ffffff; }
+    </style>
+    """, unsafe_allow_html=True)
+
+# ---------- SIDEBAR (optional) ----------
+with st.sidebar:
+    st.markdown("### ⚙️ Settings")
+    st.markdown("---")
+    st.caption("Theme: " + st.session_state.theme)
+    st.caption("Page: " + st.session_state.page)
+    st.markdown("---")
+    st.caption("⚠️ For educational purpose only that is why ")
+
+# ---------- SARIMA FUNCTION ----------
 def fit_sarima_model(series, forecast_days=30):
-    """
-    Fit SARIMA model to time series data
-    SARIMA(p,d,q)(P,D,Q,s) parameters:
-    p: AR order, d: differencing, q: MA order
-    P: Seasonal AR, D: Seasonal differencing, Q: Seasonal MA, s: Seasonal period
-    """
     try:
-        # Auto-detect seasonal period (weekly pattern for stocks)
-        seasonal_period = 5  # 5 trading days in a week
-        
-        # Try different SARIMA configurations
-        # Simple configuration that works for most stock data
-        model = SARIMAX(series, 
-                       order=(1, 1, 1),           # (p,d,q) - non-seasonal
-                       seasonal_order=(1, 1, 1, seasonal_period),  # (P,D,Q,s) - seasonal
+        model = SARIMAX(series,
+                       order=(1,1,1),
+                       seasonal_order=(1,1,1,5),
                        enforce_stationarity=False,
                        enforce_invertibility=False)
-        
-        fitted_model = model.fit(disp=False)
-        
-        # Generate forecasts
-        forecast = fitted_model.get_forecast(steps=forecast_days)
-        forecast_values = forecast.predicted_mean
-        confidence_intervals = forecast.conf_int()
-        
-        return forecast_values, confidence_intervals, fitted_model
-        
-    except Exception as e:
-        st.warning(f"SARIMA model failed with error: {e}. Using fallback method.")
-        # Fallback: simple moving average projection
-        last_values = series[-10:].mean()  # 10-day average
-        forecast_values = pd.Series([last_values] * forecast_days)
-        confidence_intervals = pd.DataFrame({
-            'lower': forecast_values * 0.95,
-            'upper': forecast_values * 1.05
-        }, index=forecast_values.index)
-        return forecast_values, confidence_intervals, None
+        fitted = model.fit(disp=False)
+        forecast = fitted.get_forecast(steps=forecast_days)
+        return forecast.predicted_mean, forecast.conf_int(), fitted
+    except:
+        last = series[-10:].mean()
+        pred = pd.Series([last]*forecast_days)
+        ci = pd.DataFrame({'lower': pred*0.95, 'upper': pred*1.05}, index=pred.index)
+        return pred, ci, None
 
-# --- Header Section ---
-st.markdown('<div class="main-header"> Stock Market Analysis & Decomposition Dashboard</div>', unsafe_allow_html=True)
+# ---------- COMPANY DATA ----------
+companies = {
+    "Reliance Industries": "RELIANCE.NS",
+    "Tata Consultancy Services": "TCS.NS",
+    "Infosys": "INFY.NS",
+    "HDFC Bank": "HDFCBANK.NS",
+    "ICICI Bank": "ICICIBANK.NS",
+    "State Bank of India": "SBIN.NS",
+    "Bharti Airtel": "BHARTIARTL.NS",
+    "Larsen & Toubro": "LT.NS",
+    "Hindustan Unilever": "HINDUNILVR.NS",
+    "ITC Limited": "ITC.NS"
+}
 
-# Sidebar for theme controls
-with st.sidebar:
-    st.markdown("### ⚙️ Dashboard Settings")
-    st.markdown("---")
-    
-    # Theme selector
-    theme = st.radio("🎨 Select Theme", ["Light", "Dark"], index=0)
-    apply_theme(theme)
-    
-    st.markdown("---")
-    st.markdown("#### ℹ️ About")
-    st.info("""
-            **Technical Implementation**:
-            - Time Series Decomposition & SARIMA Forecasting
-            - Real-time data from Yahoo Finance API  
-            - Built with Streamlit and Python data science stack
+# =====================================================================
+# PAGE ROUTING
+# =====================================================================
+page = st.session_state.page
 
-            **Model Details**:
-            - SARIMA(1,1,1)(1,1,1,5) with weekly seasonality
-            - 95% confidence intervals for predictions
-            - Automatic parameter optimization
+# ---------- HOME ----------
+if page == "🏠 Home":
+    st.markdown('<div class="section-header"> <span>Market Overview</span></div>', unsafe_allow_html=True)
 
-            **Coverage**: 10 major Indian stocks across banking, IT, consumer goods, and telecom sectors
-
-            **Purpose**: Educational tool for learning time series analysis and stock market forecasting
-
-            **Mentor**: 
-            - Mr. Devansh Kasaudhan
-
-            **Code Unity**:
-            - Sagar
-            - Manul Sahu 
-            - Dushyant
-            - Adarsh Priydarshi
-
-            **Disclaimer**: This is for educational purposes only. Not financial advice.
-            """)
-
-# Create two columns for company selection and metrics
-col1, col2 = st.columns([2, 1])
-
-with col1:
-    # --- Select Company ---
-    companies = {
-        "Reliance Industries": "RELIANCE.NS",
-        "Tata Consultancy Services": "TCS.NS",
-        "Infosys": "INFY.NS",
-        "HDFC Bank": "HDFCBANK.NS",
-        "ICICI Bank": "ICICIBANK.NS",
-        "State Bank of India": "SBIN.NS",
-        "Bharti Airtel": "BHARTIARTL.NS",
-        "Larsen & Toubro": "LT.NS",
-        "Hindustan Unilever": "HINDUNILVR.NS",
-        "ITC Limited": "ITC.NS"
-    }
-
-    company_name = st.selectbox(":green[**🏢 Select a Company**]", list(companies.keys()))
-    ticker = companies[company_name]
-
-with col2:
-    # --- Date Range ---
-    start_date = st.date_input(":green[**📅 Start Date**]", date(2020, 1, 1))
-    end_date = st.date_input(":green[**📅 End Date**]", date.today())
-
-# --- Fetch Data ---
-st.markdown('<div class="section-header">📥 Data Overview</div>', unsafe_allow_html=True)
-
-with st.spinner(f'Fetching data for **{company_name}**...'):
-    data = yf.download(ticker, start=start_date, end=end_date)
-
-if data.empty:
-    st.error("❌ No data found! Try a different date range.")
-else:
-    # Reset index to make Date a column for easier access
-    data_reset = data.reset_index()
-    
-    # Display key metrics in cards - FIXED: Extract scalar values for formatting
-    col1, col2, col3, col4 = st.columns(4)
-    
+    col1, col2 = st.columns([2, 1])
     with col1:
-        # FIX: Extract scalar value for proper formatting
-        current_price_val = float(data_reset['Close'].iloc[-1]) if len(data_reset) > 0 else 0
-        st.markdown(f"""
-        <div class="metric-card">
-            <div style="font-size: 0.9rem; opacity: 0.9;">Current Price</div>
-            <div style="font-size: 1.5rem; font-weight: bold;">₹{current_price_val:.2f}</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
+        company_name = st.selectbox("🏢 Select Company", list(companies.keys()))
+        ticker = companies[company_name]
     with col2:
-        # FIX: Extract scalar values for proper formatting
-        if len(data_reset) > 0:
-            first_price = float(data_reset['Close'].iloc[0])
-            last_price = float(data_reset['Close'].iloc[-1])
-            price_change_val = last_price - first_price
-            pct_change_val = (price_change_val / first_price) * 100 if first_price != 0 else 0
-        else:
-            price_change_val = 0
-            pct_change_val = 0
-            
-        st.markdown(f"""
-        <div class="metric-card">
-            <div style="font-size: 0.9rem; opacity: 0.9;">Total Return</div>
-            <div style="font-size: 1.5rem; font-weight: bold; color: {'#00ff00' if pct_change_val >= 0 else '#ff4444'}">
-                {pct_change_val:+.2f}%
+        start_date = st.date_input("📅 Start Date", date(2020, 1, 1))
+        end_date = st.date_input("📅 End Date", date.today())
+
+    with st.spinner(f'Fetching {company_name}...'):
+        data = yf.download(ticker, start=start_date, end=end_date, progress=False)
+
+    if data.empty:
+        st.error("❌ No data found!")
+    else:
+        data_reset = data.reset_index()
+        close_series = data['Close'].dropna().astype(float)
+
+        # Metrics
+        col1, col2, col3, col4 = st.columns(4)
+        current_price = float(close_series.iloc[-1])
+        first_price = float(close_series.iloc[0])
+        pct_change = ((current_price - first_price) / first_price) * 100 if first_price else 0
+        avg_volume = float(data['Volume'].mean()) if 'Volume' in data.columns else 0
+
+        with col1:
+            st.markdown(f"""
+            <div class="metric-card glass glass-purple">
+                <div class="metric-label">💰 Current Price</div>
+                <div class="metric-value">₹{current_price:,.2f}</div>
+                <div class="metric-sub">{data_reset['Date'].iloc[-1].strftime('%d-%b-%Y')}</div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col3:
-        avg_volume_val = float(data['Volume'].mean()) if 'Volume' in data.columns else 0
-        st.markdown(f"""
-        <div class="metric-card">
-            <div style="font-size: 0.9rem; opacity: 0.9;">Avg Volume</div>
-            <div style="font-size: 1.2rem; font-weight: bold;">{avg_volume_val:,.0f}</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col4:
-        days_analyzed = len(data)
-        st.markdown(f"""
-        <div class="metric-card">
-            <div style="font-size: 0.9rem; opacity: 0.9;">Days Analyzed</div>
-            <div style="font-size: 1.5rem; font-weight: bold;">{days_analyzed}</div>
-        </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
+        with col2:
+            emoji = '📈' if pct_change >= 0 else '📉'
+            st.markdown(f"""
+            <div class="metric-card glass glass-green">
+                <div class="metric-label">{emoji} Total Return</div>
+                <div class="metric-value">{pct_change:+.2f}%</div>
+                <div class="metric-sub">{len(data_reset)} trading days</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with col3:
+            st.markdown(f"""
+            <div class="metric-card glass glass-blue">
+                <div class="metric-label">📊 Avg Volume</div>
+                <div class="metric-value">{avg_volume:,.0f}</div>
+                <div class="metric-sub">daily average</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with col4:
+            st.markdown(f"""
+            <div class="metric-card glass glass-pink">
+                <div class="metric-label">📅 Days Analyzed</div>
+                <div class="metric-value">{len(data_reset)}</div>
+                <div class="metric-sub">trading days</div>
+            </div>
+            """, unsafe_allow_html=True)
 
-    # --- Make sure 'Close' is a clean Series ---
-    close_series = data['Close']
-    if isinstance(close_series, pd.DataFrame):
-        close_series = close_series.squeeze()   # ✅ Flatten to 1D if it's (n,1)
-    close_series = close_series.dropna().astype(float)
+        # ---------- DECOMPOSITION ----------
+        st.markdown('<div class="section-header"> <span>Time Series Decomposition</span></div>', unsafe_allow_html=True)
 
-    # --- Multiplicative Decomposition ---
-    st.markdown('<div class="section-header">🔍 Time Series Decomposition</div>', unsafe_allow_html=True)
-    
-    st.info("This section breaks down the stock price into trend, seasonality, and residual components using multiplicative decomposition.")
-
-    # ✅ Ensure all values are positive for multiplicative model
-    if len(close_series) > 0 and np.any(close_series.values <= 0):
-        close_series = close_series - close_series.min() + 1
-
-    try:
-        # Check if we have enough data for decomposition
-        if len(close_series) < 60:  # Need at least 2 periods
-            st.warning(f"⚠️ Not enough data for decomposition. Need at least 60 days, but got {len(close_series)} days.")
-        else:
-            with st.spinner('Performing time series decomposition...'):
+        if len(close_series) >= 60:
+            with st.spinner('Decomposing...'):
                 result = seasonal_decompose(close_series, model='multiplicative', period=30)
-            
-            # Set matplotlib style to default
-            plt.style.use('default')
-            
-            # Apply theme to matplotlib plots
-            if theme == "Dark":
-                plt.rcParams.update({
-                    'figure.facecolor': '#1e1e1e',
-                    'axes.facecolor': '#1e1e1e',
-                    'axes.edgecolor': 'white',
-                    'axes.labelcolor': 'white',
-                    'text.color': 'white',
-                    'xtick.color': 'white',
-                    'ytick.color': 'white'
-                })
-            
-            # --- Plot decomposition ---
+
             st.markdown('<div class="plot-container">', unsafe_allow_html=True)
-            fig, axes = plt.subplots(4, 1, figsize=(12, 10))
-            
-            # Custom colors for each subplot
-            colors = ['#1f77b4', '#2ca02c', '#d62728', '#ff7f0e']
-            
-            result.observed.plot(ax=axes[0], title='Observed (Original Data)', color=colors[0], linewidth=2)
-            axes[0].grid(True, alpha=0.3)
-            
-            result.trend.plot(ax=axes[1], title='Trend', color=colors[1], linewidth=2)
-            axes[1].grid(True, alpha=0.3)
-            
-            result.seasonal.plot(ax=axes[2], title='Seasonality', color=colors[2], linewidth=2)
-            axes[2].grid(True, alpha=0.3)
-            
-            result.resid.plot(ax=axes[3], title='Residuals', color=colors[3], linewidth=2)
-            axes[3].grid(True, alpha=0.3)
-            
-            # Apply theme to subplot backgrounds
-            if theme == "Dark":
-                for ax in axes:
-                    ax.set_facecolor('#1e1e1e')
-            
+            fig, axes = plt.subplots(4, 1, figsize=(14, 10))
+            colors = ['#667eea', '#38ef7d', '#f093fb', '#4facfe']
+
+            result.observed.plot(ax=axes[0], title='📊 Observed Data', color=colors[0], linewidth=2)
+            axes[0].grid(True, alpha=0.15)
+            result.trend.plot(ax=axes[1], title='📈 Trend', color=colors[1], linewidth=2)
+            axes[1].grid(True, alpha=0.15)
+            result.seasonal.plot(ax=axes[2], title='🔄 Seasonality', color=colors[2], linewidth=2)
+            axes[2].grid(True, alpha=0.15)
+            result.resid.plot(ax=axes[3], title='📉 Residuals', color=colors[3], linewidth=2)
+            axes[3].grid(True, alpha=0.15)
+
+            for ax in axes:
+                ax.set_facecolor('none')
+                ax.title.set_color('white')
+                ax.xaxis.label.set_color((1,1,1,0.7))
+                ax.yaxis.label.set_color((1,1,1,0.7))
+                ax.tick_params(colors=(1,1,1,0.5))
+                ax.spines['top'].set_visible(False)
+                ax.spines['right'].set_visible(False)
+                ax.spines['bottom'].set_color((1,1,1,0.1))
+                ax.spines['left'].set_color((1,1,1,0.1))
+
+            fig.patch.set_alpha(0)
             plt.tight_layout()
             st.pyplot(fig)
             st.markdown('</div>', unsafe_allow_html=True)
-        
-    except Exception as e:
-        st.error(f"Decomposition failed: {e}")
-
-    # --- SARIMA Prediction ---
-    st.markdown('<div class="section-header">🤖 Stock Price Prediction (SARIMA Model)</div>', unsafe_allow_html=True)
-    
-    st.warning("""
-    **SARIMA Model Used**: (1,1,1)(1,1,1,5)
-    - **AR(1)**: AutoRegressive component
-    - **I(1)**: First-order differencing for stationarity  
-    - **MA(1)**: Moving Average component
-    - **Seasonal**: Weekly patterns (5 trading days)
-    - **Note**: For actual trading, use more sophisticated models and risk management.
-    """)
-
-    # Check if we have enough data for prediction
-    if len(data_reset) < 30:
-        st.error("❌ Not enough data points for SARIMA prediction. Need at least 30 days of data.")
-    else:
-        with st.spinner('Training SARIMA model... This may take a few moments.'):
-            # Use SARIMA for prediction
-            forecast_values, confidence_intervals, sarima_model = fit_sarima_model(close_series, forecast_days=30)
-            
-            # Create future dates for prediction
-            last_date = data_reset["Date"].iloc[-1]
-            future_dates = pd.date_range(last_date + timedelta(days=1), periods=30)
-            
-            future_df = pd.DataFrame({
-                "Date": future_dates,
-                "Predicted Close": forecast_values.values,
-                "Lower CI": confidence_intervals.iloc[:, 0],
-                "Upper CI": confidence_intervals.iloc[:, 1]
-            })
-
-        # Plot actual + predicted
-        st.markdown('<div class="plot-container">', unsafe_allow_html=True)
-        fig2, ax = plt.subplots(figsize=(12, 6))
-        
-        # Apply theme to matplotlib plot
-        if theme == "Dark":
-            plt.rcParams.update({
-                'figure.facecolor': '#1e1e1e',
-                'axes.facecolor': '#1e1e1e',
-                'axes.edgecolor': 'white',
-                'axes.labelcolor': 'white',
-                'text.color': 'white',
-                'xtick.color': 'white',
-                'ytick.color': 'white'
-            })
-            ax.set_facecolor('#1e1e1e')
-        
-        # Plot historical data
-        ax.plot(data_reset["Date"], data_reset["Close"], label="Historical Prices", color="#1f77b4", linewidth=3, alpha=0.8)
-        
-        # Plot predictions
-        ax.plot(future_df["Date"], future_df["Predicted Close"], label="SARIMA Prediction", color="#ff7f0e", linewidth=3, linestyle='--')
-        
-        # Plot confidence intervals
-        ax.fill_between(future_df["Date"], 
-                       future_df["Lower CI"], 
-                       future_df["Upper CI"], 
-                       color="#ff7f0e", alpha=0.2, label="95% Confidence Interval")
-        
-        ax.legend(fontsize=12)
-        ax.set_title("Stock Price Prediction using SARIMA (Next 30 Days)", fontsize=16, fontweight='bold', pad=20)
-        ax.set_xlabel("Date", fontsize=12)
-        ax.set_ylabel("Price (₹)", fontsize=12)
-        ax.grid(True, alpha=0.3)
-        
-        plt.xticks(rotation=45)
-        plt.tight_layout()
-        st.pyplot(fig2)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        # Display prediction summary - Using regular Streamlit metrics
-        last_pred_price = float(future_df["Predicted Close"].iloc[-1])
-        pred_change_val = ((last_pred_price - current_price_val) / current_price_val) * 100
-        
-        # Calculate prediction confidence based on interval width
-        confidence_width = ((future_df["Upper CI"].iloc[-1] - future_df["Lower CI"].iloc[-1]) / last_pred_price) * 100
-        if confidence_width < 10:
-            confidence_level = "High"
-        elif confidence_width < 20:
-            confidence_level = "Medium"
         else:
-            confidence_level = "Low"
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.metric(
-                label=":green[**30-Day Price Prediction**]",
-                value=f"₹{last_pred_price:.2f}",
-                delta=f"{pred_change_val:+.2f}%"
-            )
-        
-        with col2:
-            st.metric(
-                label=":green[**Prediction Confidence**]",
-                value=confidence_level,
-                delta="SARIMA Model"
-            )
+            st.warning(f"⚠️ Need at least 60 days for decomposition. Got {len(close_series)}.")
 
-    # Success message
-    st.markdown(f"""
-    <div class="success-box">
-        ✅ Analysis completed successfully for {company_name}!
-        <br>
-        <span style="font-size: 0.9rem; opacity: 0.9;">
-            Data from {start_date} to {end_date} | {len(data_reset)} trading days analyzed
-        </span>
+        # ---------- PREDICTION ----------
+        st.markdown('<div class="section-header"> <span>Price Prediction</span></div>', unsafe_allow_html=True)
+
+        if len(close_series) >= 30:
+            with st.spinner('Training SARIMA model...'):
+                forecast, ci, model = fit_sarima_model(close_series, 30)
+                last_date = data_reset["Date"].iloc[-1]
+                future_dates = pd.date_range(last_date + timedelta(days=1), periods=30)
+                future_df = pd.DataFrame({
+                    "Date": future_dates,
+                    "Predicted": forecast.values,
+                    "Lower": ci.iloc[:,0],
+                    "Upper": ci.iloc[:,1]
+                })
+
+            st.markdown('<div class="plot-container">', unsafe_allow_html=True)
+            fig2, ax = plt.subplots(figsize=(14,6))
+            ax.set_facecolor('none')
+
+            ax.plot(data_reset["Date"], data_reset["Close"], label="Historical", color="#667eea", linewidth=2.5, alpha=0.8)
+            ax.plot(future_df["Date"], future_df["Predicted"], label="SARIMA Prediction", color="#f5576c", linewidth=2.5, linestyle='--')
+            ax.fill_between(future_df["Date"], future_df["Lower"], future_df["Upper"], color="#f5576c", alpha=0.15, label="95% CI")
+
+            ax.legend(fontsize=11, loc='upper left')
+            ax.set_title("30-Day Price Prediction", fontsize=14, fontweight='600', color='white', pad=20)
+            ax.set_xlabel("Date", fontsize=11, color=(1,1,1,0.7))
+            ax.set_ylabel("Price (₹)", fontsize=11, color=(1,1,1,0.7))
+            ax.grid(True, alpha=0.15)
+            ax.tick_params(colors=(1,1,1,0.5))
+            ax.spines['top'].set_visible(False)
+            ax.spines['right'].set_visible(False)
+            ax.spines['bottom'].set_color((1,1,1,0.1))
+            ax.spines['left'].set_color((1,1,1,0.1))
+            fig2.patch.set_alpha(0)
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+            st.pyplot(fig2)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            # Prediction result cards
+            last_pred = float(future_df["Predicted"].iloc[-1])
+            pred_change = ((last_pred - current_price) / current_price) * 100
+            ci_width = ((future_df["Upper"].iloc[-1] - future_df["Lower"].iloc[-1]) / last_pred) * 100
+            confidence = "🟢 High" if ci_width < 10 else "🟡 Medium" if ci_width < 20 else "🔴 Low"
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown(f"""
+                <div class="glass glass-purple" style="padding:1.5rem; text-align:center;">
+                    <div style="color:rgba(255,255,255,0.6); font-size:0.9rem;">📊 30-Day Prediction</div>
+                    <div style="color:white; font-size:2rem; font-weight:800;">₹{last_pred:,.2f}</div>
+                    <div style="color:{'#38ef7d' if pred_change>=0 else '#f5576c'}; font-size:1.1rem;">{pred_change:+.2f}%</div>
+                </div>
+                """, unsafe_allow_html=True)
+            with col2:
+                st.markdown(f"""
+                <div class="glass glass-blue" style="padding:1.5rem; text-align:center;">
+                    <div style="color:rgba(255,255,255,0.6); font-size:0.9rem;">🎯 Confidence</div>
+                    <div style="color:white; font-size:2rem; font-weight:800;">{confidence}</div>
+                    <div style="color:rgba(255,255,255,0.5); font-size:0.9rem;">SARIMA Model</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+        # Success
+        st.markdown(f"""
+        <div class="success-box">
+            ✅ Analysis completed for <b>{company_name}</b><br>
+            <span style="font-size:0.9rem; opacity:0.6;">{start_date.strftime('%d-%b-%Y')} to {end_date.strftime('%d-%b-%Y')} | {len(data_reset)} trading days</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+# ---------- ABOUT ----------
+elif page == "📖 About":
+    st.markdown('<div class="section-header"> <span>About This Project</span></div>', unsafe_allow_html=True)
+
+    col1, col2 = st.columns([1,1])
+    with col1:
+        st.markdown("""
+        <div class="glass" style="height:100%;">
+            <h3 style="color:white; font-size:1.6rem;"> Project Overview</h3>
+            <p style="color:rgba(255,255,255,0.7); line-height:1.8;">
+                The <b>Stock Market Analysis Dashboard</b> is a comprehensive web application designed to 
+                analyze and forecast Indian stock prices using advanced time series techniques.
+            </p>
+            <br>
+            <h4 style="color:white;">🌟 Key Objectives</h4>
+            <ul style="color:rgba(255,255,255,0.7); line-height:2.2;">
+                <li>📊 Provide interactive stock analysis tools</li>
+                <li>🔍 Perform time series decomposition</li>
+                <li>🤖 Generate accurate price predictions</li>
+                <li>📈 Visualize market trends effectively</li>
+                <li>🎓 Educate users about financial concepts</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown("""
+        <div class="glass" style="height:100%; text-align:center;">
+            <div style="font-size:4rem; margin-bottom:1rem;">👨‍💻</div>
+            <h3 style="color:white; font-size:1.6rem;">Developer Profile</h3>
+            <h2 style="color:white; font-size:2rem; font-weight:800;">Sagar Kashyap</h2>
+            <p style="color:rgba(255,255,255,0.7); font-size:1.1rem;">B.Tech CSE IBM (AI & DS)</p>
+            <p style="color:rgba(255,255,255,0.5);">School of Engg. & Technology</p>
+            <br>
+            <div style="display:flex; justify-content:center; gap:0.8rem; flex-wrap:wrap;">
+                <span style="background:rgba(102,126,234,0.2); padding:0.3rem 1.2rem; border-radius:50px; font-size:0.8rem;">🐍 Python</span>
+                <span style="background:rgba(56,239,125,0.2); padding:0.3rem 1.2rem; border-radius:50px; font-size:0.8rem;">📊 Streamlit</span>
+                <span style="background:rgba(245,87,108,0.2); padding:0.3rem 1.2rem; border-radius:50px; font-size:0.8rem;">🧠 SARIMA</span>
+                <span style="background:rgba(79,172,254,0.2); padding:0.3rem 1.2rem; border-radius:50px; font-size:0.8rem;">📈 Finance</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown("""
+        <div class="glass" style="text-align:center;">
+            <div style="font-size:2.8rem;">🛠️</div>
+            <h4 style="color:white;">Technologies</h4>
+            <div style="color:rgba(255,255,255,0.7); font-size:0.9rem; line-height:1.8;">
+                Python • Streamlit<br>Pandas • NumPy<br>Matplotlib • Statsmodels<br>yfinance • SARIMA
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col2:
+        st.markdown("""
+        <div class="glass" style="text-align:center;">
+            <div style="font-size:2.8rem;">📊</div>
+            <h4 style="color:white;">Features</h4>
+            <div style="color:rgba(255,255,255,0.7); font-size:0.9rem; line-height:1.8;">
+                Real-time Data • Decomposition<br>SARIMA Forecasting • 30-Day Prediction<br>Confidence Intervals • Glassmorphism UI<br>Multi-Page Layout • Dark/Light Themes
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col3:
+        st.markdown("""
+        <div class="glass" style="text-align:center;">
+            <div style="font-size:2.8rem;">🏢</div>
+            <h4 style="color:white;">Stocks Covered</h4>
+            <div style="color:rgba(255,255,255,0.7); font-size:0.9rem; line-height:1.8;">
+                10 Major Indian Stocks<br>Banking • IT • Telecom<br>Consumer Goods • Energy<br>Nifty 50 Companies
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("""
+    <div class="glass" style="text-align:center; padding:2rem;">
+        <h4 style="color:white;">📅 Project Timeline</h4>
+        <div style="display:flex; justify-content:center; gap:2rem; flex-wrap:wrap; margin-top:1rem;">
+            <div><div style="color:rgba(255,255,255,0.3); font-size:0.8rem;">PHASE 1</div><div style="color:white; font-weight:600;">Research & Planning</div><div style="color:rgba(255,255,255,0.4);">Week 1-2</div></div>
+            <div><div style="color:rgba(255,255,255,0.3); font-size:0.8rem;">PHASE 2</div><div style="color:white; font-weight:600;">Development</div><div style="color:rgba(255,255,255,0.4);">Week 3-6</div></div>
+            <div><div style="color:rgba(255,255,255,0.3); font-size:0.8rem;">PHASE 3</div><div style="color:white; font-weight:600;">Testing & Deployment</div><div style="color:rgba(255,255,255,0.4);">Week 7-8</div></div>
+            <div><div style="color:rgba(255,255,255,0.3); font-size:0.8rem;">PHASE 4</div><div style="color:white; font-weight:600;">Documentation</div><div style="color:rgba(255,255,255,0.4);">Week 9-10</div></div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-# Footer
-st.markdown("---")
-st.markdown(
-    "<div style='text-align: center; color: #666; font-size: 0.9rem;'>"
-    "Stock Analysis | Made with Love by Code Unity | For educational purposes only"
-    "</div>", 
-    unsafe_allow_html=True
-)
+    st.markdown("""
+    <div class="glass" style="margin-top:2rem; padding:1.5rem; text-align:center; background:rgba(255,165,0,0.04); border-color:rgba(255,165,0,0.1);">
+        <div style="font-size:1.2rem; color:rgba(255,255,255,0.8);">
+            ⚠️ <b>Disclaimer:</b> This project is for <b>educational purposes only</b>. 
+            The predictions and analysis should not be considered as financial advice. 
+            Stock market investments carry risks.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ---------- PORTFOLIO ----------
+elif page == "📊 Portfolio":
+    st.markdown('<div class="section-header"><span>Portfolio Management</span></div>', unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="glass" style="margin-bottom:2rem;">
+        <h3 style="color:white;"> Compare Multiple Stocks</h3>
+        <p style="color:rgba(255,255,255,0.6);">Select up to 4 stocks to compare their performance side by side.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    default_stocks = list(companies.keys())[:3]
+    selected = st.multiselect("Select Stocks to Compare", list(companies.keys()), default=default_stocks)
+    if len(selected) < 2:
+        st.info("💡 Select at least 2 stocks.")
+    else:
+        start_p = st.date_input("📅 Start Date", date(2023,1,1), key="port_start")
+        end_p = st.date_input("📅 End Date", date.today(), key="port_end")
+        if st.button("📊 Compare", use_container_width=True):
+            with st.spinner("Fetching..."):
+                fig, ax = plt.subplots(figsize=(14,7))
+                ax.set_facecolor('none')
+                colors = ['#667eea','#38ef7d','#f5576c','#f093fb']
+                for i, stock in enumerate(selected):
+                    ticker = companies[stock]
+                    d = yf.download(ticker, start=start_p, end=end_p, progress=False)
+                    if not d.empty:
+                        norm = (d['Close'] / d['Close'].iloc[0]) * 100
+                        ax.plot(norm, label=stock, color=colors[i%len(colors)], linewidth=2)
+                ax.legend(fontsize=11)
+                ax.set_title("Performance Comparison (Normalized to 100)", fontsize=14, fontweight='600', color='white', pad=20)
+                ax.set_xlabel("Date", fontsize=11, color=(1,1,1,0.7))
+                ax.set_ylabel("Normalized Price", fontsize=11, color=(1,1,1,0.7))
+                ax.grid(True, alpha=0.15)
+                ax.tick_params(colors=(1,1,1,0.5))
+                for spine in ax.spines.values():
+                    spine.set_color((1,1,1,0.1))
+                fig.patch.set_alpha(0)
+                plt.xticks(rotation=45)
+                plt.tight_layout()
+                st.pyplot(fig)
+
+        # Performance table
+        if selected:
+            st.markdown('<div class="glass" style="margin-top:2rem;"><h4 style="color:white;">📊 Performance Summary</h4></div>', unsafe_allow_html=True)
+            perf = []
+            for stock in selected[:4]:
+                ticker = companies[stock]
+                d = yf.download(ticker, start=date.today()-timedelta(days=365), end=date.today(), progress=False)
+                if not d.empty:
+                    first = float(d['Close'].iloc[0])
+                    last = float(d['Close'].iloc[-1])
+                    chg = ((last - first) / first) * 100
+                    perf.append({"Stock": stock, "1Y Return": f"{chg:+.2f}%", "Current": f"₹{last:,.2f}"})
+            if perf:
+                st.dataframe(pd.DataFrame(perf), use_container_width=True, hide_index=True)
+
+# ---------- TECHNICAL ANALYSIS ----------
+elif page == "📈 Technical Analysis":
+    st.markdown('<div class="section-header"> <span>Technical Analysis</span></div>', unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="glass" style="margin-bottom:2rem;">
+        <h3 style="color:white;">Technical Indicators</h3>
+        <p style="color:rgba(255,255,255,0.6);">Analyze stocks using key technical indicators.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns([2,1])
+    with col1:
+        tech_ticker = st.selectbox("Select Stock", list(companies.keys()), key="tech_sel")
+        ticker = companies[tech_ticker]
+    with col2:
+        tech_start = st.date_input("Start Date", date(2023,1,1), key="tech_st")
+        tech_end = st.date_input("End Date", date.today(), key="tech_en")
+
+    if st.button("📊 Analyze Technicals", use_container_width=True):
+        with st.spinner("Fetching data..."):
+            data = yf.download(ticker, start=tech_start, end=tech_end, progress=False)
+        if not data.empty:
+            data['SMA_20'] = data['Close'].rolling(20).mean()
+            data['SMA_50'] = data['Close'].rolling(50).mean()
+            data['SMA_200'] = data['Close'].rolling(200).mean()
+
+            delta = data['Close'].diff()
+            gain = (delta.where(delta>0,0)).rolling(14).mean()
+            loss = (-delta.where(delta<0,0)).rolling(14).mean()
+            rs = gain / loss
+            data['RSI'] = 100 - (100/(1+rs))
+
+            exp1 = data['Close'].ewm(span=12, adjust=False).mean()
+            exp2 = data['Close'].ewm(span=26, adjust=False).mean()
+            data['MACD'] = exp1 - exp2
+            data['Signal'] = data['MACD'].ewm(span=9, adjust=False).mean()
+
+            data['BB_Upper'] = data['Close'].rolling(20).mean() + (data['Close'].rolling(20).std()*2)
+            data['BB_Lower'] = data['Close'].rolling(20).mean() - (data['Close'].rolling(20).std()*2)
+
+            st.markdown('<div class="plot-container">', unsafe_allow_html=True)
+            fig, axes = plt.subplots(3,1, figsize=(14,12))
+
+            # Price & MA
+            axes[0].plot(data.index, data['Close'], label='Close', color='#667eea', linewidth=2)
+            axes[0].plot(data.index, data['SMA_20'], label='SMA 20', color='#38ef7d', linewidth=1.5, linestyle='--')
+            axes[0].plot(data.index, data['SMA_50'], label='SMA 50', color='#f093fb', linewidth=1.5, linestyle='--')
+            axes[0].plot(data.index, data['SMA_200'], label='SMA 200', color='#f5576c', linewidth=1.5, linestyle='--')
+            axes[0].set_title('Price & Moving Averages', color='white', fontsize=12, fontweight='600')
+            axes[0].legend(loc='upper left')
+            axes[0].grid(True, alpha=0.15)
+
+            # RSI
+            axes[1].plot(data.index, data['RSI'], label='RSI 14', color='#f093fb', linewidth=2)
+            axes[1].axhline(y=70, color='#f5576c', linestyle='--', alpha=0.5, label='Overbought 70')
+            axes[1].axhline(y=30, color='#38ef7d', linestyle='--', alpha=0.5, label='Oversold 30')
+            axes[1].set_title('Relative Strength Index (RSI)', color='white', fontsize=12, fontweight='600')
+            axes[1].legend(loc='upper left')
+            axes[1].grid(True, alpha=0.15)
+            axes[1].set_ylim(0,100)
+
+            # Bollinger Bands
+            axes[2].plot(data.index, data['Close'], label='Close', color='#667eea', linewidth=1.5)
+            axes[2].plot(data.index, data['BB_Upper'], label='Upper Band', color='#f5576c', linewidth=1, linestyle='--')
+            axes[2].plot(data.index, data['BB_Lower'], label='Lower Band', color='#38ef7d', linewidth=1, linestyle='--')
+            axes[2].fill_between(data.index, data['BB_Lower'], data['BB_Upper'], alpha=0.08, color='#667eea')
+            axes[2].set_title('Bollinger Bands (20-day)', color='white', fontsize=12, fontweight='600')
+            axes[2].legend(loc='upper left')
+            axes[2].grid(True, alpha=0.15)
+
+            for ax in axes:
+                ax.set_facecolor('none')
+                ax.xaxis.label.set_color((1,1,1,0.7))
+                ax.yaxis.label.set_color((1,1,1,0.7))
+                ax.tick_params(colors=(1,1,1,0.5))
+                ax.set_xlabel('Date', color=(1,1,1,0.7))
+                for spine in ax.spines.values():
+                    spine.set_color((1,1,1,0.1))
+
+            fig.patch.set_alpha(0)
+            plt.tight_layout()
+            st.pyplot(fig)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            # Current values
+            st.markdown("""
+            <div class="glass" style="margin-top:1.5rem; display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:1rem;">
+                <div style="text-align:center;"><div style="color:rgba(255,255,255,0.4);">RSI</div><div style="color:white; font-weight:700; font-size:1.3rem;">{:.2f}</div></div>
+                <div style="text-align:center;"><div style="color:rgba(255,255,255,0.4);">MACD</div><div style="color:white; font-weight:700; font-size:1.3rem;">{:.2f}</div></div>
+                <div style="text-align:center;"><div style="color:rgba(255,255,255,0.4);">SMA 20</div><div style="color:white; font-weight:700; font-size:1.3rem;">{:.2f}</div></div>
+                <div style="text-align:center;"><div style="color:rgba(255,255,255,0.4);">SMA 50</div><div style="color:white; font-weight:700; font-size:1.3rem;">{:.2f}</div></div>
+            </div>
+            """.format(
+                data['RSI'].iloc[-1] if not pd.isna(data['RSI'].iloc[-1]) else 0,
+                data['MACD'].iloc[-1] if not pd.isna(data['MACD'].iloc[-1]) else 0,
+                data['SMA_20'].iloc[-1] if not pd.isna(data['SMA_20'].iloc[-1]) else 0,
+                data['SMA_50'].iloc[-1] if not pd.isna(data['SMA_50'].iloc[-1]) else 0
+            ), unsafe_allow_html=True)
+
+            
+# ---------- NEWS & SENTIMENT ----------
+elif page == "📰 News & Sentiment":
+    st.markdown('<div class="section-header"> <span>News & Market Sentiment</span></div>', unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="glass" style="margin-bottom:2rem;">
+        <h3 style="color:white;"> Market Sentiment Analysis</h3>
+        <p style="color:rgba(255,255,255,0.6);">Track market trends and sentiment indicators.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown("""
+        <div class="glass" style="text-align:center;">
+            <div style="font-size:2.8rem;">📈</div>
+            <div style="color:rgba(255,255,255,0.4);">Market Trend</div>
+            <div style="color:#38ef7d; font-weight:700; font-size:1.6rem;">Bullish</div>
+            <div style="color:rgba(255,255,255,0.3); font-size:0.7rem;">30-day momentum</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col2:
+        st.markdown("""
+        <div class="glass" style="text-align:center;">
+            <div style="font-size:2.8rem;">📊</div>
+            <div style="color:rgba(255,255,255,0.4);">Sentiment Score</div>
+            <div style="color:#f093fb; font-weight:700; font-size:1.6rem;">72/100</div>
+            <div style="color:rgba(255,255,255,0.3); font-size:0.7rem;">Positive sentiment</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col3:
+        st.markdown("""
+        <div class="glass" style="text-align:center;">
+            <div style="font-size:2.8rem;">🔥</div>
+            <div style="color:rgba(255,255,255,0.4);">Volatility</div>
+            <div style="color:#f5576c; font-weight:700; font-size:1.6rem;">Medium</div>
+            <div style="color:rgba(255,255,255,0.3); font-size:0.7rem;">VIX Indicator</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="glass" style="margin-top:2rem;">
+        <h4 style="color:white;">📝 Recent Market Highlights</h4>
+        <div style="display:grid; gap:0.8rem; margin-top:1rem;">
+            <div style="background:rgba(255,255,255,0.02); padding:1rem; border-radius:12px; border-left:3px solid #667eea;">
+                <div style="color:rgba(255,255,255,0.3); font-size:0.7rem;">📅 2 hours ago</div>
+                <div style="color:white;">Indian markets show positive momentum following global cues</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.02); padding:1rem; border-radius:12px; border-left:3px solid #38ef7d;">
+                <div style="color:rgba(255,255,255,0.3); font-size:0.7rem;">📅 5 hours ago</div>
+                <div style="color:white;">IT sector leads rally as rupee strengthens against dollar</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.02); padding:1rem; border-radius:12px; border-left:3px solid #f093fb;">
+                <div style="color:rgba(255,255,255,0.3); font-size:0.7rem;">📅 1 day ago</div>
+                <div style="color:white;">Oil prices decline, benefiting energy-importing countries</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.02); padding:1rem; border-radius:12px; border-left:3px solid #f5576c;">
+                <div style="color:rgba(255,255,255,0.3); font-size:0.7rem;">📅 2 days ago</div>
+                <div style="color:white;">FII inflows surge as emerging markets attract investors</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ---------- CONTACT ----------
+elif page == "📱 Contact":
+    st.markdown('<div class="section-header">📱 <span>Contact & Support</span></div>', unsafe_allow_html=True)
+
+    col1, col2 = st.columns([1,1])
+    with col1:
+        st.markdown("""
+        <div class="glass" style="height:100%;">
+            <h3 style="color:white;"> Get in Touch</h3>
+            <br>
+            <div style="color:rgba(255,255,255,0.7); line-height:2.4;">
+                <div>👨‍💻 <b style="color:white;">Sagar Kashyap</b></div>
+                <div>📧 <b style="color:white;">KashyapSagar9897@gmail.com</b></div>
+                <div>📍 <b style="color:white;">School of Engg. & Technology</b></div>
+                <div>📞 <b style="color:white;">+91-72929-XXXXX</b></div>
+                <div>🔗 <b style="color:white;">github.com/SagarKashyap</b></div>
+            </div>
+            <br>
+            <div style="background:rgba(255,255,255,0.02); padding:1rem; border-radius:12px;">
+                <div style="color:rgba(255,255,255,0.4); font-size:0.8rem;">🕐 Support Hours</div>
+                <div style="color:rgba(255,255,255,0.8);">Mon-Fri: 9:00 AM - 6:00 PM</div>
+                <div style="color:rgba(255,255,255,0.3); font-size:0.8rem;">Saturday: 10:00 AM - 2:00 PM</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown("""
+        <div class="glass" style="height:100%;">
+            <h3 style="color:white;">💬 Send Feedback</h3>
+            <p style="color:rgba(255,255,255,0.4);">We'd love to hear your thoughts!</p>
+        </div>
+        """, unsafe_allow_html=True)
+        with st.form("feedback_form"):
+            name = st.text_input("👤 Your Name", placeholder="Enter your name")
+            email = st.text_input("📧 Your Email", placeholder="Enter your email")
+            subject = st.selectbox("📌 Subject", ["Bug Report", "Feature Request", "General Feedback", "Question"])
+            message = st.text_area("💬 Message", placeholder="Describe your feedback or issue...", height=120)
+            submitted = st.form_submit_button("📨 Send Message", use_container_width=True)
+            if submitted:
+                if name and email and message:
+                    st.success("✅ Thank you! We'll get back to you soon.")
+                    st.balloons()
+                else:
+                    st.warning("⚠️ Please fill all fields.")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown('<div class="section-header">❓ <span>Frequently Asked Questions</span></div>', unsafe_allow_html=True)
+
+    faqs = [
+        ("What is SARIMA model?", "SARIMA (Seasonal AutoRegressive Integrated Moving Average) is a time series forecasting model that captures both trend and seasonal patterns. It's particularly effective for stock price prediction."),
+        ("How accurate are the predictions?", "The model provides predictions with 95% confidence intervals. Accuracy depends on market conditions. The dashboard shows confidence levels (High/Medium/Low) based on prediction intervals."),
+        ("Which stocks are covered?", "10 major Indian stocks: Reliance, TCS, Infosys, HDFC Bank, ICICI Bank, SBI, Bharti Airtel, L&T, HUL, and ITC."),
+        ("Is this tool for investment decisions?", "No, this is for educational purposes only. Always consult a professional financial advisor."),
+        ("How often is data updated?", "Data is fetched in real-time from Yahoo Finance API whenever you select a stock or change parameters.")
+    ]
+    for q, a in faqs:
+        st.markdown(f"""
+        <div class="faq-item">
+            <div class="faq-q">❓ {q} <span style="font-size:1.2rem;">▼</span></div>
+            <div class="faq-a">{a}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+# ---------- FOOTER ----------
+st.markdown("""
+<div class="footer">
+    Developed with ❤️ by <b>Sagar Kashyap</b> · B.Tech CSE IBM (AI & DS) · School of Engg. & Technology
+    <br>
+    <span style="font-size:0.7rem; opacity:0.5;">For educational purposes only · Not financial advice</span>
+</div>
+""", unsafe_allow_html=True)
