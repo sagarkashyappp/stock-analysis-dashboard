@@ -11,6 +11,60 @@ import numpy as np
 import warnings
 warnings.filterwarnings('ignore')
 
+
+def download_stock_data(ticker, **kwargs):
+    """Download one ticker and normalize yfinance's single-ticker MultiIndex columns.
+
+    Recent yfinance releases may return columns such as ('Close', 'RELIANCE.NS')
+    even for a single ticker. Flattening those columns keeps the rest of the app
+    working with the familiar Open/High/Low/Close/Volume Series interface.
+    """
+    data = yf.download(ticker, **kwargs)
+    if data is None or data.empty:
+        return pd.DataFrame()
+
+    if isinstance(data.columns, pd.MultiIndex):
+        matched_level = None
+        matched_value = None
+        for level in range(data.columns.nlevels):
+            values = data.columns.get_level_values(level)
+            for value in pd.unique(values):
+                if str(value) == str(ticker):
+                    matched_level = level
+                    matched_value = value
+                    break
+            if matched_level is not None:
+                break
+
+        # If Yahoo returns a one-ticker MultiIndex with a different ticker label,
+        # select the only non-price level when it is unambiguous.
+        if matched_level is None:
+            price_fields = {"Open", "High", "Low", "Close", "Adj Close", "Volume"}
+            for level in reversed(range(data.columns.nlevels)):
+                values = list(pd.unique(data.columns.get_level_values(level)))
+                if len(values) == 1 and str(values[0]) not in price_fields:
+                    matched_level = level
+                    matched_value = values[0]
+                    break
+
+        if matched_level is not None:
+            data = data.xs(matched_value, axis=1, level=matched_level, drop_level=True)
+
+        if isinstance(data.columns, pd.MultiIndex):
+            data.columns = data.columns.get_level_values(0)
+
+    return data
+
+
+def get_close_series(data):
+    """Return Close as a numeric pandas Series, including for legacy MultiIndex data."""
+    if data is None or data.empty or "Close" not in data.columns:
+        return pd.Series(dtype=float)
+    close = data["Close"]
+    if isinstance(close, pd.DataFrame):
+        close = close.iloc[:, 0]
+    return pd.to_numeric(close, errors="coerce").dropna().astype(float)
+
 # ---------- PAGE CONFIG ----------
 st.set_page_config(
     page_title="SagarFinSight | Stock Market Analysis",
@@ -480,13 +534,16 @@ if page == "🏠 Home":
         end_date = st.date_input("📅 End Date", date.today())
 
     with st.spinner(f'Fetching {company_name}...'):
-        data = yf.download(ticker, start=start_date, end=end_date, progress=False)
+        data = download_stock_data(ticker, start=start_date, end=end_date, progress=False)
 
     if data.empty:
         st.error("❌ No data found!")
     else:
         data_reset = data.reset_index()
-        close_series = data['Close'].dropna().astype(float)
+        close_series = get_close_series(data)
+        if close_series.empty:
+            st.error("No valid closing-price data was returned for this stock and date range. Please try another date range or stock.")
+            st.stop()
 
         # Metrics
         col1, col2, col3, col4 = st.columns(4)
@@ -762,10 +819,12 @@ elif page == "📊 Portfolio":
                 colors = ['#2DD4BF','#22C55E','#F87171','#F59E0B']
                 for i, stock in enumerate(selected):
                     ticker = companies[stock]
-                    d = yf.download(ticker, start=start_p, end=end_p, progress=False)
+                    d = download_stock_data(ticker, start=start_p, end=end_p, progress=False)
                     if not d.empty:
-                        norm = (d['Close'] / d['Close'].iloc[0]) * 100
-                        ax.plot(norm, label=stock, color=colors[i%len(colors)], linewidth=2)
+                        d_close = get_close_series(d)
+                        if not d_close.empty and d_close.iloc[0] != 0:
+                            norm = (d_close / d_close.iloc[0]) * 100
+                            ax.plot(norm, label=stock, color=colors[i%len(colors)], linewidth=2)
                 ax.legend(fontsize=11)
                 ax.set_title("Performance Comparison (Normalized to 100)", fontsize=14, fontweight='600', color='white', pad=20)
                 ax.set_xlabel("Date", fontsize=11, color=(1,1,1,0.7))
@@ -785,12 +844,14 @@ elif page == "📊 Portfolio":
             perf = []
             for stock in selected[:4]:
                 ticker = companies[stock]
-                d = yf.download(ticker, start=date.today()-timedelta(days=365), end=date.today(), progress=False)
+                d = download_stock_data(ticker, start=date.today()-timedelta(days=365), end=date.today(), progress=False)
                 if not d.empty:
-                    first = float(d['Close'].iloc[0])
-                    last = float(d['Close'].iloc[-1])
-                    chg = ((last - first) / first) * 100
-                    perf.append({"Stock": stock, "1Y Return": f"{chg:+.2f}%", "Current": f"₹{last:,.2f}"})
+                    d_close = get_close_series(d)
+                    if not d_close.empty and d_close.iloc[0] != 0:
+                        first = float(d_close.iloc[0])
+                        last = float(d_close.iloc[-1])
+                        chg = ((last - first) / first) * 100
+                        perf.append({"Stock": stock, "1Y Return": f"{chg:+.2f}%", "Current": f"₹{last:,.2f}"})
             if perf:
                 st.dataframe(pd.DataFrame(perf), use_container_width=True, hide_index=True)
 
@@ -815,8 +876,12 @@ elif page == "📈 Technical Analysis":
 
     if st.button("📊 Analyze Technicals", use_container_width=True):
         with st.spinner("Fetching data..."):
-            data = yf.download(ticker, start=tech_start, end=tech_end, progress=False)
+            data = download_stock_data(ticker, start=tech_start, end=tech_end, progress=False)
         if not data.empty:
+            data['Close'] = get_close_series(data)
+            if data['Close'].empty:
+                st.error("No valid closing-price data was returned. Please try another date range.")
+                st.stop()
             data['SMA_20'] = data['Close'].rolling(20).mean()
             data['SMA_50'] = data['Close'].rolling(50).mean()
             data['SMA_200'] = data['Close'].rolling(200).mean()
